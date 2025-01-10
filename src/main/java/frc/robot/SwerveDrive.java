@@ -19,14 +19,12 @@ public class SwerveDrive extends SubsystemBase
 
     SwerveDriveKinematics kinematics;
     SwerveDriveOdometry   odometry;
-    Gyroscope             gyro; 
+    AHRS                  gyro; 
     SwerveModule[]        swerveModules;
     
     // Constructor
     public SwerveDrive() 
     {
-    
-        
         kinematics = new SwerveDriveKinematics(
             new Translation2d(Units.inchesToMeters(12.5), Units.inchesToMeters(12.5)), // Front Left
             new Translation2d(Units.inchesToMeters(12.5), Units.inchesToMeters(-12.5)), // Front Right
@@ -34,17 +32,14 @@ public class SwerveDrive extends SubsystemBase
             new Translation2d(Units.inchesToMeters(-12.5), Units.inchesToMeters(-12.5))  // Back Right
         );
         
-        gyro = new Gyroscope(); 
-
-        
+        gyro = new AHRS(SPI.Port.kMXP);
+       
         odometry = new SwerveDriveOdometry(
             kinematics,
             gyro.getAngle(), 
             new SwerveModulePosition[]{new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()},
-            
             new Pose2d(0,0,new Rotation2d()) 
-        );
-            
+        );   
     }
     
     // Simple drive function
@@ -55,7 +50,6 @@ public class SwerveDrive extends SubsystemBase
         // Get the SwerveModuleStates for each module given the desired speeds.
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(testSpeeds);
         // Output order is Front-Left, Front-Right, Back-Left, Back-Right
-        
         swerveModules[0].setDesiredState(swerveModuleStates[0]);
         swerveModules[1].setDesiredState(swerveModuleStates[1]);
         swerveModules[2].setDesiredState(swerveModuleStates[2]);
